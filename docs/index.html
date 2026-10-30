@@ -61,9 +61,11 @@ cv.addEventListener('pointerdown',e=>{
   initAudio();if(e.pointerType==='touch')touchMode=true;e.preventDefault();
   const p=lp(e),x=p[0],y=p[1];
   if(state==='menu'){menuButtons().forEach((b,i)=>{const by=70+i*28,o=(W-320)/2;if(x>40+o&&x<280+o&&y>by&&y<by+24)menuPick(i)});return}
-  if(state==='skill'){SKILLS.forEach((s2,i)=>{const by=32+i*35,o=(W-320)/2;if(x>20+o&&x<300+o&&y>by&&y<by+33)pickSkill(i)});return}
+  if(state==='skill'){SKILLS.forEach((s2,i)=>{const by=18+i*31,o=(W-320)/2;if(x>20+o&&x<300+o&&y>by&&y<by+30)pickSkill(i)});return}
   if(state==='win'||state==='lose'){if(endT>0.6)advance();return}
   if(state==='pause'){state='play';return}
+  if(state==='confirm'){if(y>94&&y<114){if(x>W/2-72&&x<W/2-8)abortMission();else if(x>W/2+8&&x<W/2+72)state='play'}return}
+  if(x>W-26&&y<16){askAbort();return}
   for(const k in BTN){const b=BTN[k];if(Math.hypot(x-b.x,y-b.y)<b.r+4){tp.btn[e.pointerId]=k;if(k==='fire')tp.fire=true;if(k==='nade')tp.nade=true;if(k==='use')tp.use=true;if(k==='run')tp.run=!tp.run;try{cv.setPointerCapture(e.pointerId)}catch(_){}return}}
   if(Math.hypot(x-PAD.x,y-PAD.y)<PAD.r+18&&tp.jid===null){tp.jid=e.pointerId;tp.jx=x;tp.jy=y;tp.dx=tp.dy=0;try{cv.setPointerCapture(e.pointerId)}catch(_){}}
 });
@@ -83,7 +85,8 @@ const SKILLS=[
   {name:'TREFFSICHERHEIT',d1:'ZIELHILFE UND KEINE STREUUNG',d2:'SCHNELLERES FEUER, MEHR MUNITION'},
   {name:'TARNUNG',d1:'GEGNER SEHEN DICH NUR AUS DER NAEHE',d2:'LEISERE SCHUESSE, SCHNELLER SCHLEICHEN'},
   {name:'SPRENGMEISTER',d1:'MEHR GRANATEN, GROESSERER RADIUS',d2:'KURZE ZUENDSCHNUR, WENIGER SELBSTSCHADEN'},
-  {name:'RESILIENZ',d1:'MEHR LEBEN UND WENIGER SCHADEN',d2:'SCHNELLERE KRAFT, STAERKERE MEDIKITS'}
+  {name:'RESILIENZ',d1:'MEHR LEBEN UND WENIGER SCHADEN',d2:'SCHNELLERE KRAFT, STAERKERE MEDIKITS'},
+  {name:'NORMAL',d1:'KEINE BESONDEREN FAEHIGKEITEN',d2:'AUSGEGLICHENE GRUNDWERTE'}
 ];
 const SIZES={depot:[3,2],hut:[2,2],hq:[3,3],plain:[2,2]};
 
@@ -281,6 +284,9 @@ function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
 save=loadSave();
 function menuButtons(){const l=[];if(save)l.push({k:'cont',label:'WEITER: LEVEL '+(save.lvl+1),sub:'SKILL: '+SKILLS[save.skill].name});l.push({k:'new',label:'NEUES SPIEL',sub:'4 LEVEL - SKILL WAEHLEN'});return l}
 function menuPick(i){const b=menuButtons()[i];if(!b)return;if(b.k==='cont'){skill=save.skill;total=save.total;startMission(save.lvl)}else{state='skill'}}
+function releaseTouch(){tp.fire=false;tp.nade=false;tp.use=false;tp.jid=null;tp.dx=tp.dy=0;tp.btn={}}
+function askAbort(){if(state==='play'){releaseTouch();state='confirm'}}
+function abortMission(){releaseTouch();state='menu'}
 function pickSkill(i){skill=i;total=0;startMission(0)}
 function advance(){if(state==='lose'){startMission(mIdx)}else if(state==='win'){if(mIdx<MISSIONS.length-1)startMission(mIdx+1);else state='menu'}}
 function aimAssist(a){
@@ -294,6 +300,8 @@ function update(dt){
   if(state==='menu'){const bl=menuButtons();let go=-1;for(let i=0;i<bl.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))go=i;if(go<0&&(was('Enter')||was('Space')))go=0;if(go>=0)menuPick(go);return}
   if(state==='skill'){for(let i=0;i<SKILLS.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))pickSkill(i);if(was('Escape'))state='menu';return}
   if(state==='win'||state==='lose'){endT+=dt;if(endT>0.6&&(was('Enter')||was('Space')))advance();updateFx(dt);return}
+  if(state==='confirm'){if(was('KeyJ')||was('Enter'))abortMission();else if(was('KeyN')||was('Escape'))state='play';return}
+  if(was('Escape')&&state==='play'){askAbort();return}
   if(was('KeyP'))state=state==='pause'?'play':'pause';
   if(state==='pause')return;
   if(was('KeyM'))showMap=!showMap;
@@ -752,7 +760,8 @@ function drawHUD(cx,cy){
   txt('KRAFT',96,9,'#c8d8ff');bar(129,2,42,P.st/100,P.exh?'#c04a3a':'#5ab4d8');txt('LEVEL '+(mIdx+1),188,9,'#ffe070');
   const objs=blds.filter(b=>b.kind!=='plain'),dn=objs.filter(b=>b.done).length;
   const m=Math.floor(time/60),s=Math.floor(time%60);
-  txt((m<10?'0':'')+m+':'+(s<10?'0':'')+s,W-3,9,'#ffe070','right');
+  txt((m<10?'0':'')+m+':'+(s<10?'0':'')+s,W-21,9,'#ffe070','right');
+  rect(ctx,'#000',W-17,1,14,10);rect(ctx,'#a83030',W-16,2,12,8);rect(ctx,'#d85a5a',W-16,2,12,1);rect(ctx,'#ffffff',W-13,4,1,1);rect(ctx,'#ffffff',W-12,5,1,1);rect(ctx,'#ffffff',W-11,6,2,1);rect(ctx,'#ffffff',W-12,7,1,1);rect(ctx,'#ffffff',W-9,5,1,1);rect(ctx,'#ffffff',W-9,7,1,1);rect(ctx,'#ffffff',W-13,7,1,1);rect(ctx,'#ffffff',W-9,4,1,1);
   rect(ctx,'#e8c040',4,H-9,2,5);rect(ctx,'#fff6b0',4,H-9,2,1);rect(ctx,'#e8c040',7,H-9,2,5);rect(ctx,'#fff6b0',7,H-9,2,1);
   txt(P.ammo,13,H-3,P.ammo>0?'#fff':'#ff6a50');
   fillCirc(ctx,'#1a1a1a',46,H-6,3);fillCirc(ctx,'#4a5a2a',46,H-6,2);rect(ctx,'#8aa060',45,H-7,1,1);rect(ctx,'#aaa',46,H-10,2,1);
@@ -850,16 +859,24 @@ function drawSkill(){
   if(!MB)MB=makeMenuBG();
   ctx.drawImage(MB,0,0);rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
   const o=Math.round((W-320)/2);
-  txt('WAEHLE DEINEN SKILL',W/2,22,'#ffe070','center',12);
+  txt('WAEHLE DEINEN SKILL',W/2,14,'#ffe070','center',12);
   SKILLS.forEach((s2,i)=>{
-    const y=32+i*35;
-    rect(ctx,'rgba(8,6,28,.92)',20+o,y,280,33);frameBox(ctx,20+o,y,280,33,'#6c5eb5');
-    rect(ctx,'#ffd060',24+o,y+4,15,15);rect(ctx,'#a07a20',24+o,y+17,15,2);
-    ctx.fillStyle='#2a1a00';rawText(ctx,String(i+1),27+o,y+5,2);
-    txt(s2.name,46+o,y+11,'#fff');txt(s2.d1,46+o,y+20,'#9fb0e0');txt(s2.d2,46+o,y+28,'#9fb0e0');
+    const y=18+i*31;
+    rect(ctx,'rgba(8,6,28,.92)',20+o,y,280,30);frameBox(ctx,20+o,y,280,30,'#6c5eb5');
+    rect(ctx,'#ffd060',24+o,y+7,15,15);rect(ctx,'#a07a20',24+o,y+20,15,2);
+    ctx.fillStyle='#2a1a00';rawText(ctx,String(i+1),27+o,y+8,2);
+    txt(s2.name,46+o,y+8,'#fff');txt(s2.d1,46+o,y+18,'#9fb0e0');txt(s2.d2,46+o,y+27,'#9fb0e0');
   });
-  txt('ANTIPPEN ODER ZIFFERNTASTE',W/2,184,'#ffe070','center');
-  txt('GILT FUER ALLE LEVEL',W/2,195,'#b8c4e8','center');
+  txt('ANTIPPEN ODER ZIFFERNTASTE',W/2,183,'#ffe070','center');
+  txt('GILT FUER ALLE LEVEL',W/2,194,'#b8c4e8','center');
+}
+function drawConfirm(){
+  rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
+  rect(ctx,'rgba(8,6,28,.95)',W/2-90,66,180,touchMode?58:70);frameBox(ctx,W/2-90,66,180,touchMode?58:70,'#6c5eb5');
+  txt('MISSION ABBRECHEN?',W/2,84,'#fff','center');
+  rect(ctx,'#000',W/2-71,94,62,18);rect(ctx,'#a83030',W/2-70,95,60,16);txt('JA',W/2-40,107,'#fff','center');
+  rect(ctx,'#000',W/2+9,94,62,18);rect(ctx,'#2f7a3c',W/2+10,95,60,16);txt('NEIN',W/2+40,107,'#fff','center');
+  if(!touchMode)txt('J/ENTER = JA   N/ESC = NEIN',W/2,126,'#9fb0e0','center');
 }
 function drawEnd(){
   const o=Math.round((W-320)/2);
@@ -892,6 +909,7 @@ function draw(){
   ctx.drawImage(VIG,0,0);
   drawHUD(c.cx,c.cy);
   if(state==='win'||state==='lose')drawEnd();
+  if(state==='confirm')drawConfirm();
   if(state==='pause'){ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(0,0,W,H);txt('PAUSE',W/2,H/2,'#fff','center',16)}
   rotateHint();
 }

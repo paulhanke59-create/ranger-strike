@@ -21,6 +21,7 @@ Lokal testen: `docs/index.html` einfach im Browser öffnen.
 | Rennen (kostet Kraft) | Shift | RENN (umschalten) |
 | Schleichen (schwerer zu entdecken) | C | – |
 | Pause / Minimap | P / M | – |
+| Mission abbrechen | Esc | roter Knopf oben rechts |
 
 ## Spielablauf
 
@@ -34,6 +35,7 @@ Vor Level 1 wählst du einen Skill, der für alle Levels gilt:
 | Tarnung | Gegner sehen dich nur aus der Nähe, leisere Schüsse, schnelleres Schleichen |
 | Sprengmeister | Mehr Granaten, größerer Radius, kurze Zündschnur, weniger Selbstschaden |
 | Resilienz | 150 statt 100 Leben, 15 % weniger Schaden, Kraft erholt sich schneller, Medikits heilen mehr |
+| Normal | Keine besonderen Fähigkeiten, ausgeglichene Grundwerte |
 
 Levels:
 
