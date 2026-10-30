@@ -42,6 +42,8 @@ Levels:
 3. **Schattenakte** – Dokumente aus 2 Kommandoposten stehlen
 4. **Großer Schlag** – gemischter Einsatz
 
+Gegner sehen dich, rufen „Enemy!" und holen Verstärkung. Auch Schüsse und Explosionen locken neue Gegner an. Verlierst du sie, ziehen sich die Verstärkungen wieder zurück. Auf der Minimap sind alle Gegner als kleine Punkte zu sehen (gelb = alarmiert).
+
 Nach allen Zielen: zurück zur Landezone (weißes H), dann ist das Level geschafft.
 
 ## Android-App (Capacitor)
