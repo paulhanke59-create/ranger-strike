@@ -61,7 +61,8 @@ cv.addEventListener('pointerdown',e=>{
   initAudio();if(e.pointerType==='touch')touchMode=true;e.preventDefault();
   const p=lp(e),x=p[0],y=p[1];
   if(state==='menu'){menuButtons().forEach((b,i)=>{const by=70+i*28,o=(W-320)/2;if(x>40+o&&x<280+o&&y>by&&y<by+24)menuPick(i)});return}
-  if(state==='skill'){SKILLS.forEach((s2,i)=>{const by=18+i*31,o=(W-320)/2;if(x>20+o&&x<300+o&&y>by&&y<by+30)pickSkill(i)});return}
+  if(state==='missions'){MISSIONS.forEach((m,i)=>{const by=24+i*33,o=(W-320)/2;if(x>30+o&&x<290+o&&y>by&&y<by+29)pickMission(i)});if(y>H-26)state='menu';return}
+  if(state==='skill'){SKILLS.forEach((s2,i)=>{const by=18+i*31,o=(W-320)/2;if(x>20+o&&x<300+o&&y>by&&y<by+30)pickSkill(i)});if(y>H-22)state=single?'missions':'menu';return}
   if(state==='win'||state==='lose'){if(endT>0.6)advance();return}
   if(state==='pause'){state='play';return}
   if(state==='confirm'){if(y>94&&y<114){if(x>W/2-72&&x<W/2-8)abortMission();else if(x>W/2+8&&x<W/2+72)state='play'}return}
@@ -92,7 +93,7 @@ const SIZES={depot:[3,2],hut:[2,2],hq:[3,3],plain:[2,2]};
 
 /* ---------- Spielzustand ---------- */
 let state='menu',map,blds=[],enemies=[],bullets=[],nades=[],parts=[],picks=[],P,cam={x:0,y:0},LZ={x:0,y:0};
-let lastSay=-9,rfCd=0,shotHeat=0,skill=0,total=0,save=null,mission=null,mIdx=0,time=0,kills=0,ready=false,msg='',msgT=0,shake=0,flash=0,endT=0,showMap=true,score=0,mm=null,lastTime=0;
+let single=false,pendLvl=0,lastSay=-9,rfCd=0,shotHeat=0,skill=0,total=0,save=null,mission=null,mIdx=0,time=0,kills=0,ready=false,msg='',msgT=0,shake=0,flash=0,endT=0,showMap=true,score=0,mm=null,lastTime=0;
 
 const tileAt=(tx,ty)=>(tx<0||ty<0||tx>=MW||ty>=MH)?2:map[ty*MW+tx];
 const isSolid=(px,py)=>{const t=tileAt(Math.floor(px/T),Math.floor(py/T));return t===1||t===2||t===3||t===5};
@@ -189,7 +190,7 @@ function startMission(i){
   rfCd=0;shotHeat=0;lastSay=-9;bullets=[];nades=[];parts=[];decals=[];blasts=[];kills=0;time=0;ready=false;score=0;shake=0;flash=0;endT=0;
   spawnEnemies(mission.enemies);spawnPicks();
   cam.x=0;cam.y=MH*T;
-  showMsg('LEVEL '+(i+1)+': '+mission.desc.toUpperCase(),3.5);
+  showMsg((single?'MISSION ':'LEVEL ')+(i+1)+': '+mission.desc.toUpperCase(),3.5);
   state='play';
 }
 
@@ -273,8 +274,10 @@ function onSpot(e){
 function winGame(){
   const objs=blds.filter(b=>b.kind!=='plain').length;
   score=objs*1000+kills*50+Math.round(P.hp/P.maxHp*500)+Math.max(0,Math.round((600-time)*2));
-  total+=score;
-  if(mIdx<MISSIONS.length-1){save={lvl:mIdx+1,skill:skill,total:total};writeSave()}else{save=null;clearSave()}
+  if(single){total=score}else{
+    total+=score;
+    if(mIdx<MISSIONS.length-1){save={lvl:mIdx+1,skill:skill,total:total};writeSave()}else{save=null;clearSave()}
+  }
   state='win';endT=0;msgT=0;tone(660,.4,'square',.05,330);
 }
 const SAVE_KEY='rangerstrike_save';
@@ -282,13 +285,14 @@ function loadSave(){try{const j=JSON.parse(localStorage.getItem(SAVE_KEY)||'null
 function writeSave(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
 function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
 save=loadSave();
-function menuButtons(){const l=[];if(save)l.push({k:'cont',label:'WEITER: LEVEL '+(save.lvl+1),sub:'SKILL: '+SKILLS[save.skill].name});l.push({k:'new',label:'NEUES SPIEL',sub:'4 LEVEL - SKILL WAEHLEN'});return l}
-function menuPick(i){const b=menuButtons()[i];if(!b)return;if(b.k==='cont'){skill=save.skill;total=save.total;startMission(save.lvl)}else{state='skill'}}
+function menuButtons(){const l=[];if(save)l.push({k:'cont',label:'WEITER: LEVEL '+(save.lvl+1),sub:'SKILL: '+SKILLS[save.skill].name});l.push({k:'new',label:'KAMPAGNE',sub:'NEUES SPIEL - 4 LEVEL'});l.push({k:'single',label:'EINZELNE MISSION',sub:'EIN LEVEL AUSSUCHEN UND SPIELEN'});return l}
+function menuPick(i){const b=menuButtons()[i];if(!b)return;if(b.k==='cont'){single=false;skill=save.skill;total=save.total;startMission(save.lvl)}else if(b.k==='single'){single=true;state='missions'}else{single=false;state='skill'}}
+function pickMission(i){pendLvl=i;single=true;state='skill'}
 function releaseTouch(){tp.fire=false;tp.nade=false;tp.use=false;tp.jid=null;tp.dx=tp.dy=0;tp.btn={}}
 function askAbort(){if(state==='play'){releaseTouch();state='confirm'}}
 function abortMission(){releaseTouch();state='menu'}
-function pickSkill(i){skill=i;total=0;startMission(0)}
-function advance(){if(state==='lose'){startMission(mIdx)}else if(state==='win'){if(mIdx<MISSIONS.length-1)startMission(mIdx+1);else state='menu'}}
+function pickSkill(i){skill=i;total=0;startMission(single?pendLvl:0)}
+function advance(){if(state==='lose'){startMission(mIdx)}else if(state==='win'){if(!single&&mIdx<MISSIONS.length-1)startMission(mIdx+1);else state='menu'}}
 function aimAssist(a){
   let best=null,bs=1e9;
   for(const e of enemies){if(e.dead)continue;const d=dist(e.x,e.y,P.x,P.y);if(d>190)continue;const an=Math.atan2(e.y-P.y,e.x-P.x),df=Math.abs(angDiff(an,a));if(df<.42&&los(P.x,P.y,e.x,e.y)){const sc=df+d*.001;if(sc<bs){bs=sc;best=an}}}
@@ -298,7 +302,8 @@ function rank(s){return s>=5200?'MAJOR':s>=4200?'HAUPTMANN':s>=3200?'LEUTNANT':s
 
 function update(dt){
   if(state==='menu'){const bl=menuButtons();let go=-1;for(let i=0;i<bl.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))go=i;if(go<0&&(was('Enter')||was('Space')))go=0;if(go>=0)menuPick(go);return}
-  if(state==='skill'){for(let i=0;i<SKILLS.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))pickSkill(i);if(was('Escape'))state='menu';return}
+  if(state==='missions'){for(let i=0;i<MISSIONS.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))pickMission(i);if(was('Escape'))state='menu';return}
+  if(state==='skill'){for(let i=0;i<SKILLS.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))pickSkill(i);if(was('Escape'))state=single?'missions':'menu';return}
   if(state==='win'||state==='lose'){endT+=dt;if(endT>0.6&&(was('Enter')||was('Space')))advance();updateFx(dt);return}
   if(state==='confirm'){if(was('KeyJ')||was('Enter'))abortMission();else if(was('KeyN')||was('Escape'))state='play';return}
   if(was('Escape')&&state==='play'){askAbort();return}
@@ -757,7 +762,7 @@ function bar(x,y,w,v,col,bg){
 function drawHUD(cx,cy){
   rect(ctx,'rgba(10,8,30,.78)',0,0,W,12);rect(ctx,'#6c5eb5',0,12,W,1);rect(ctx,'rgba(10,8,30,.78)',0,H-12,W,12);rect(ctx,'#6c5eb5',0,H-12,W,1);
   txt('LEBEN',3,9,'#c8d8ff');bar(36,2,52,P.hp/P.maxHp,P.hp>P.maxHp*.3?'#6ac04a':'#e03030');
-  txt('KRAFT',96,9,'#c8d8ff');bar(129,2,42,P.st/100,P.exh?'#c04a3a':'#5ab4d8');txt('LEVEL '+(mIdx+1),188,9,'#ffe070');
+  txt('KRAFT',96,9,'#c8d8ff');bar(129,2,42,P.st/100,P.exh?'#c04a3a':'#5ab4d8');txt((single?'MISSION ':'LEVEL ')+(mIdx+1),188,9,'#ffe070');
   const objs=blds.filter(b=>b.kind!=='plain'),dn=objs.filter(b=>b.done).length;
   const m=Math.floor(time/60),s=Math.floor(time%60);
   txt((m<10?'0':'')+m+':'+(s<10?'0':'')+s,W-21,9,'#ffe070','right');
@@ -855,6 +860,21 @@ function drawMenu(){
   txt('G: GRANATE   E: AKTION   SHIFT: RENNEN',W/2,181,'#b8c4e8','center');
   txt('F: VOLLBILD',W-3,9,'#b8c4e8','right');txt('ANTIPPEN ODER ENTER ZUM STARTEN',W/2,193,((Date.now()/500)|0)%2?'#ffe070':'#fff','center');
 }
+function drawMissions(){
+  if(!MB)MB=makeMenuBG();
+  ctx.drawImage(MB,0,0);rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
+  const o=Math.round((W-320)/2);
+  txt('MISSION WAEHLEN',W/2,14,'#ffe070','center',12);
+  MISSIONS.forEach((m,i)=>{
+    const y=24+i*33;
+    rect(ctx,'rgba(8,6,28,.92)',30+o,y,260,29);frameBox(ctx,30+o,y,260,29,'#6c5eb5');
+    rect(ctx,'#ffd060',34+o,y+7,15,15);rect(ctx,'#a07a20',34+o,y+20,15,2);
+    ctx.fillStyle='#2a1a00';rawText(ctx,String(i+1),37+o,y+8,2);
+    txt(m.name,54+o,y+12,'#fff');txt(m.desc,54+o,y+23,'#9fb0e0');
+  });
+  txt('ANTIPPEN ODER ZIFFERNTASTE',W/2,172,'#ffe070','center');
+  txt(touchMode?'HIER ANTIPPEN = ZURUECK':'ESC = ZURUECK',W/2,184,'#b8c4e8','center');
+}
 function drawSkill(){
   if(!MB)MB=makeMenuBG();
   ctx.drawImage(MB,0,0);rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
@@ -868,7 +888,7 @@ function drawSkill(){
     txt(s2.name,46+o,y+8,'#fff');txt(s2.d1,46+o,y+18,'#9fb0e0');txt(s2.d2,46+o,y+27,'#9fb0e0');
   });
   txt('ANTIPPEN ODER ZIFFERNTASTE',W/2,183,'#ffe070','center');
-  txt('GILT FUER ALLE LEVEL',W/2,194,'#b8c4e8','center');
+  txt(single?'GILT FUER DIESE MISSION':'GILT FUER ALLE LEVEL',W/2,194,'#b8c4e8','center');if(touchMode)txt('UNTEN ANTIPPEN = ZURUECK',W/2,H-1,'#8a98c8','center');
 }
 function drawConfirm(){
   rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
@@ -883,15 +903,15 @@ function drawEnd(){
   rect(ctx,'rgba(6,4,20,.86)',40+o,36,240,128);frameBox(ctx,40+o,36,240,128,'#6c5eb5');frameBox(ctx,43+o,39,234,122,'#352879');
   if(state==='win'){
     const last=mIdx>=MISSIONS.length-1;
-    txt(last?'KAMPAGNE GESCHAFFT':'LEVEL '+(mIdx+1)+' GESCHAFFT',W/2,60,'#80e060','center',12);
+    txt(single?'MISSION '+(mIdx+1)+' GESCHAFFT':last?'KAMPAGNE GESCHAFFT':'LEVEL '+(mIdx+1)+' GESCHAFFT',W/2,60,'#80e060','center',12);
     const ob=blds.filter(b=>b.kind!=='plain').length*1000;
     const rows=[['ZIELE',ob],['FEINDE',kills*50],['LEBEN',Math.round(P.hp/P.maxHp*500)],['ZEIT',Math.max(0,Math.round((600-time)*2))]];
     rows.forEach((r2,i)=>{txt(r2[0],100+o,78+i*12,'#c8d8ff');txt(String(r2[1]),220+o,78+i*12,'#fff','right')});
     rect(ctx,'#6c5eb5',100+o,120,120,1);
     txt('PUNKTE '+score,W/2,131,'#ffe070','center',8);
-    txt('GESAMT '+total,W/2,143,'#fff','center',8);
-    txt(rank(total/(mIdx+1)),W/2,155,'#ffa040','center',8);
-    if(endT>0.6)txt(last?(touchMode?'ANTIPPEN = MENUE':'ENTER = MENUE'):((touchMode?'ANTIPPEN = LEVEL ':'ENTER = LEVEL ')+(mIdx+2)),W/2,172,'#9fb0e0','center');
+    if(!single)txt('GESAMT '+total,W/2,143,'#fff','center',8);
+    txt(rank(single?score:total/(mIdx+1)),W/2,155,'#ffa040','center',8);
+    if(endT>0.6)txt((last||single)?(touchMode?'ANTIPPEN = MENUE':'ENTER = MENUE'):((touchMode?'ANTIPPEN = LEVEL ':'ENTER = LEVEL ')+(mIdx+2)),W/2,172,'#9fb0e0','center');
   }else{
     txt('GEFALLEN',W/2,80,'#ff5a4a','center',16);
     txt('DER RANGER IST NICHT ZURUECKGEKEHRT',W/2,100,'#fff','center');
@@ -904,6 +924,7 @@ function draw(){
   ctx.imageSmoothingEnabled=false;
   ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
   if(state==='menu'){drawMenu();rotateHint();return}
+  if(state==='missions'){drawMissions();rotateHint();return}
   if(state==='skill'){drawSkill();rotateHint();return}
   const c=drawWorld();
   ctx.drawImage(VIG,0,0);
