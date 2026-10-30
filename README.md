@@ -33,6 +33,7 @@ Vor Level 1 wählst du einen Skill, der für alle Levels gilt:
 | Treffsicherheit | Zielhilfe, keine Streuung, schnelleres Feuer, mehr Munition |
 | Tarnung | Gegner sehen dich nur aus der Nähe, leisere Schüsse, schnelleres Schleichen |
 | Sprengmeister | Mehr Granaten, größerer Radius, kurze Zündschnur, weniger Selbstschaden |
+| Resilienz | 150 statt 100 Leben, 15 % weniger Schaden, Kraft erholt sich schneller, Medikits heilen mehr |
 
 Levels:
 

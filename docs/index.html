@@ -61,7 +61,7 @@ cv.addEventListener('pointerdown',e=>{
   initAudio();if(e.pointerType==='touch')touchMode=true;e.preventDefault();
   const p=lp(e),x=p[0],y=p[1];
   if(state==='menu'){menuButtons().forEach((b,i)=>{const by=70+i*28,o=(W-320)/2;if(x>40+o&&x<280+o&&y>by&&y<by+24)menuPick(i)});return}
-  if(state==='skill'){SKILLS.forEach((s2,i)=>{const by=40+i*40,o=(W-320)/2;if(x>20+o&&x<300+o&&y>by&&y<by+36)pickSkill(i)});return}
+  if(state==='skill'){SKILLS.forEach((s2,i)=>{const by=32+i*35,o=(W-320)/2;if(x>20+o&&x<300+o&&y>by&&y<by+33)pickSkill(i)});return}
   if(state==='win'||state==='lose'){if(endT>0.6)advance();return}
   if(state==='pause'){state='play';return}
   for(const k in BTN){const b=BTN[k];if(Math.hypot(x-b.x,y-b.y)<b.r+4){tp.btn[e.pointerId]=k;if(k==='fire')tp.fire=true;if(k==='nade')tp.nade=true;if(k==='use')tp.use=true;if(k==='run')tp.run=!tp.run;try{cv.setPointerCapture(e.pointerId)}catch(_){}return}}
@@ -82,7 +82,8 @@ const MISSIONS=[
 const SKILLS=[
   {name:'TREFFSICHERHEIT',d1:'ZIELHILFE UND KEINE STREUUNG',d2:'SCHNELLERES FEUER, MEHR MUNITION'},
   {name:'TARNUNG',d1:'GEGNER SEHEN DICH NUR AUS DER NAEHE',d2:'LEISERE SCHUESSE, SCHNELLER SCHLEICHEN'},
-  {name:'SPRENGMEISTER',d1:'MEHR GRANATEN, GROESSERER RADIUS',d2:'KURZE ZUENDSCHNUR, WENIGER SELBSTSCHADEN'}
+  {name:'SPRENGMEISTER',d1:'MEHR GRANATEN, GROESSERER RADIUS',d2:'KURZE ZUENDSCHNUR, WENIGER SELBSTSCHADEN'},
+  {name:'RESILIENZ',d1:'MEHR LEBEN UND WENIGER SCHADEN',d2:'SCHNELLERE KRAFT, STAERKERE MEDIKITS'}
 ];
 const SIZES={depot:[3,2],hut:[2,2],hq:[3,3],plain:[2,2]};
 
@@ -171,7 +172,7 @@ function spawnPicks(){
 function startMission(i){
   mIdx=i;mission=MISSIONS[i];
   genMap(i);
-  P={x:LZ.x,y:LZ.y-24,a:-Math.PI/2,hp:100,st:100,ammo:80+(skill===0?20:0),nades:8+(skill===2?4:0),maxA:99+(skill===0?25:0),maxG:9+(skill===2?5:0),cd:0,run:false,sneak:false,exh:false,step:0,moving:false};
+  P={x:LZ.x,y:LZ.y-24,a:-Math.PI/2,hp:100+(skill===3?50:0),maxHp:100+(skill===3?50:0),st:100,ammo:80+(skill===0?20:0),nades:8+(skill===2?4:0),maxA:99+(skill===0?25:0),maxG:9+(skill===2?5:0),cd:0,run:false,sneak:false,exh:false,step:0,moving:false};
   bullets=[];nades=[];parts=[];decals=[];blasts=[];kills=0;time=0;ready=false;score=0;shake=0;flash=0;endT=0;
   spawnEnemies(mission.enemies);spawnPicks();
   cam.x=0;cam.y=MH*T;
@@ -181,7 +182,7 @@ function startMission(i){
 
 /* ---------- Spiellogik ---------- */
 function noise(x,y,r){for(const e of enemies){if(!e.dead&&e.st===0&&dist(e.x,e.y,x,y)<r){e.st=1;e.lost=5;e.lx=x;e.ly=y}}}
-function hurt(n){if(P.hp<=0||state!=='play')return;P.hp-=n;flash=.15;tone(90,.12,'sawtooth',.06,-30);if(P.hp<=0){P.hp=0;state='lose';endT=0;showMsg('GEFALLEN!',5)}}
+function hurt(n){if(P.hp<=0||state!=='play')return;P.hp-=(skill===3?n*.85:n);flash=.15;tone(90,.12,'sawtooth',.06,-30);if(P.hp<=0){P.hp=0;state='lose';endT=0;showMsg('GEFALLEN!',5)}}
 function killEnemy(e){
   if(e.dead)return;e.dead=true;e.t=0;kills++;tone(200,.12,'sawtooth',.05,-150);
   const r=R();if(r<.30)picks.push({x:e.x,y:e.y,t:'a'});else if(r<.42)picks.push({x:e.x,y:e.y,t:'g'});else if(r<.50)picks.push({x:e.x,y:e.y,t:'m'});
@@ -236,7 +237,7 @@ function shootEnemy(e){
 }
 function winGame(){
   const objs=blds.filter(b=>b.kind!=='plain').length;
-  score=objs*1000+kills*50+Math.round(P.hp*5)+Math.max(0,Math.round((600-time)*2));
+  score=objs*1000+kills*50+Math.round(P.hp/P.maxHp*500)+Math.max(0,Math.round((600-time)*2));
   total+=score;
   if(mIdx<MISSIONS.length-1){save={lvl:mIdx+1,skill:skill,total:total};writeSave()}else{save=null;clearSave()}
   state='win';endT=0;msgT=0;tone(660,.4,'square',.05,330);
@@ -277,7 +278,7 @@ function update(dt){
   const sp=P.run?82:(P.sneak?(skill===1?36:26):48);
   P.moving=l>0.15;
   if(P.moving){P.a=Math.atan2(my,mx);moveEnt(P,mx*sp*dt,my*sp*dt,3);P.step+=sp*dt}
-  P.st=Math.max(0,Math.min(100,P.st+(P.run?-32:(P.moving?12:24))*dt));
+  P.st=Math.max(0,Math.min(100,P.st+(P.run?(skill===3?-22:-32):(P.moving?(skill===3?20:12):(skill===3?36:24)))*dt));
   P.cd-=dt;
   if((keys.Space||tp.fire)&&P.cd<=0){
     if(P.ammo>0){
@@ -349,7 +350,7 @@ function update(dt){
     if(!p.gone&&Math.abs(P.x-p.x)<8&&Math.abs(P.y-p.y)<8){
       if(p.t==='a'&&P.ammo<P.maxA){P.ammo=Math.min(P.maxA,P.ammo+24);p.gone=true}
       else if(p.t==='g'&&P.nades<P.maxG){P.nades=Math.min(P.maxG,P.nades+(skill===2?3:2));p.gone=true}
-      else if(p.t==='m'&&P.hp<100){P.hp=Math.min(100,P.hp+30);p.gone=true}
+      else if(p.t==='m'&&P.hp<P.maxHp){P.hp=Math.min(P.maxHp,P.hp+(skill===3?45:30));p.gone=true}
       if(p.gone)tone(800,.08,'square',.04,200);
     }
   }
@@ -696,7 +697,7 @@ function bar(x,y,w,v,col,bg){
 }
 function drawHUD(cx,cy){
   rect(ctx,'rgba(10,8,30,.78)',0,0,W,12);rect(ctx,'#6c5eb5',0,12,W,1);rect(ctx,'rgba(10,8,30,.78)',0,H-12,W,12);rect(ctx,'#6c5eb5',0,H-12,W,1);
-  txt('LEBEN',3,9,'#c8d8ff');bar(36,2,52,P.hp/100,P.hp>30?'#6ac04a':'#e03030');
+  txt('LEBEN',3,9,'#c8d8ff');bar(36,2,52,P.hp/P.maxHp,P.hp>P.maxHp*.3?'#6ac04a':'#e03030');
   txt('KRAFT',96,9,'#c8d8ff');bar(129,2,42,P.st/100,P.exh?'#c04a3a':'#5ab4d8');txt('LEVEL '+(mIdx+1),188,9,'#ffe070');
   const objs=blds.filter(b=>b.kind!=='plain'),dn=objs.filter(b=>b.done).length;
   const m=Math.floor(time/60),s=Math.floor(time%60);
@@ -799,14 +800,14 @@ function drawSkill(){
   const o=Math.round((W-320)/2);
   txt('WAEHLE DEINEN SKILL',W/2,22,'#ffe070','center',12);
   SKILLS.forEach((s2,i)=>{
-    const y=40+i*40;
-    rect(ctx,'rgba(8,6,28,.92)',20+o,y,280,36);frameBox(ctx,20+o,y,280,36,'#6c5eb5');
+    const y=32+i*35;
+    rect(ctx,'rgba(8,6,28,.92)',20+o,y,280,33);frameBox(ctx,20+o,y,280,33,'#6c5eb5');
     rect(ctx,'#ffd060',24+o,y+4,15,15);rect(ctx,'#a07a20',24+o,y+17,15,2);
     ctx.fillStyle='#2a1a00';rawText(ctx,String(i+1),27+o,y+5,2);
-    txt(s2.name,46+o,y+12,'#fff');txt(s2.d1,46+o,y+22,'#9fb0e0');txt(s2.d2,46+o,y+31,'#9fb0e0');
+    txt(s2.name,46+o,y+11,'#fff');txt(s2.d1,46+o,y+20,'#9fb0e0');txt(s2.d2,46+o,y+28,'#9fb0e0');
   });
-  txt('ANTIPPEN ODER ZIFFERNTASTE',W/2,186,'#ffe070','center');
-  txt('GILT FUER ALLE LEVEL',W/2,196,'#b8c4e8','center');
+  txt('ANTIPPEN ODER ZIFFERNTASTE',W/2,184,'#ffe070','center');
+  txt('GILT FUER ALLE LEVEL',W/2,195,'#b8c4e8','center');
 }
 function drawEnd(){
   const o=Math.round((W-320)/2);
@@ -815,7 +816,7 @@ function drawEnd(){
     const last=mIdx>=MISSIONS.length-1;
     txt(last?'KAMPAGNE GESCHAFFT':'LEVEL '+(mIdx+1)+' GESCHAFFT',W/2,60,'#80e060','center',12);
     const ob=blds.filter(b=>b.kind!=='plain').length*1000;
-    const rows=[['ZIELE',ob],['FEINDE',kills*50],['LEBEN',Math.round(P.hp*5)],['ZEIT',Math.max(0,Math.round((600-time)*2))]];
+    const rows=[['ZIELE',ob],['FEINDE',kills*50],['LEBEN',Math.round(P.hp/P.maxHp*500)],['ZEIT',Math.max(0,Math.round((600-time)*2))]];
     rows.forEach((r2,i)=>{txt(r2[0],100+o,78+i*12,'#c8d8ff');txt(String(r2[1]),220+o,78+i*12,'#fff','right')});
     rect(ctx,'#6c5eb5',100+o,120,120,1);
     txt('PUNKTE '+score,W/2,131,'#ffe070','center',8);
