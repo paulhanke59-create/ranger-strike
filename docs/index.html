@@ -887,8 +887,9 @@ function drawSkill(){
     ctx.fillStyle='#2a1a00';rawText(ctx,String(i+1),27+o,y+8,2);
     txt(s2.name,46+o,y+8,'#fff');txt(s2.d1,46+o,y+18,'#9fb0e0');txt(s2.d2,46+o,y+27,'#9fb0e0');
   });
-  txt('ANTIPPEN ODER ZIFFERNTASTE',W/2,183,'#ffe070','center');
-  txt(single?'GILT FUER DIESE MISSION':'GILT FUER ALLE LEVEL',W/2,194,'#b8c4e8','center');if(touchMode)txt('UNTEN ANTIPPEN = ZURUECK',W/2,H-1,'#8a98c8','center');
+  const gl=single?'GILT FUER DIESE MISSION':'GILT FUER ALLE LEVEL';
+  if(touchMode){txt(gl,W/2,183,'#ffe070','center');txt('UNTEN ANTIPPEN = ZURUECK',W/2,194,'#b8c4e8','center')}
+  else{txt('ANTIPPEN ODER ZIFFERNTASTE',W/2,183,'#ffe070','center');txt(gl,W/2,194,'#b8c4e8','center')}
 }
 function drawConfirm(){
   rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
