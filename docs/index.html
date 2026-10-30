@@ -149,6 +149,16 @@ function genMap(mi){
 
 function newEnemy(x,y){return{x,y,a:rnd(0,6.28),dead:false,t:0,st:0,tx:x,ty:y,wait:rnd(0,2),cd:rnd(.5,1.5),lost:0,lx:x,ly:y}}
 function freeSpot(x,y){return !hitSolid(x,y,6)}
+function clearLine(x0,y0,x1,y1){const d=dist(x0,y0,x1,y1),n=Math.ceil(d/5);for(let i=1;i<=n;i++){const t=i/n;if(hitSolid(x0+(x1-x0)*t,y0+(y1-y0)*t,4))return false}return true}
+function makePatrol(e){
+  const pts=[{x:e.x,y:e.y}],n=ri(2,4);let px=e.x,py=e.y,g=0;
+  while(pts.length<n+1&&g++<50){
+    const a=rnd(0,6.283),d=rnd(55,140),x=px+Math.cos(a)*d,y=py+Math.sin(a)*d;
+    if(x<4*T||x>(MW-4)*T||y<4*T||y>(MH-4)*T||hitSolid(x,y,6)||!clearLine(px,py,x,y))continue;
+    pts.push({x,y});px=x;py=y;
+  }
+  e.wp=pts;e.wi=pts.length>1?1:0;e.wd=1;e.wait=rnd(0,1.5);e.la=e.a;e.ph=rnd(0,6.28);e.stuck=0;
+}
 function spawnEnemies(n){
   enemies=[];const spots=[];
   for(const b of blds){const g=b.kind==='plain'?1:3;for(let i=0;i<g;i++)spots.push([b.x+b.w/2+rnd(-60,60),b.y+b.h+rnd(8,40)])}
@@ -157,7 +167,7 @@ function spawnEnemies(n){
   for(const s of spots){
     if(enemies.length>=n)break;
     if(!freeSpot(s[0],s[1])||dist(s[0],s[1],P.x,P.y)<220)continue;
-    enemies.push(newEnemy(s[0],s[1]));
+    {const e0=newEnemy(s[0],s[1]);makePatrol(e0);enemies.push(e0)}
   }
 }
 function spawnPicks(){
@@ -347,7 +357,7 @@ function update(dt){
       if(d<rg){const diff=Math.abs(angDiff(Math.atan2(P.y-e.y,P.x-e.x),e.a));if((diff<1.1||d<26)&&los(e.x,e.y,P.x,P.y))sees=true}
     }
     if(sees){if(e.st===0)onSpot(e);e.st=1;e.gone=0;e.ret=false;e.lost=6;e.lx=P.x;e.ly=P.y}
-    else if(e.st===1){e.lost-=dt;if(e.lost<=0){e.st=0;e.wait=1}}
+    else if(e.st===1){e.lost-=dt;if(e.lost<=0){e.st=0;if(!e.rf)makePatrol(e);e.wait=1}}
     if(e.rf&&e.st===0){
       if(!e.ret){e.ret=true;const ra=Math.atan2(e.y-P.y,e.x-P.x);e.tx=e.x+Math.cos(ra)*260;e.ty=e.y+Math.sin(ra)*260;e.wait=0}
       if(Math.abs(e.x-P.x)>W/2+30||Math.abs(e.y-P.y)>H/2+30){e.gone=(e.gone||0)+dt;if(e.gone>1.5)e.del=true}
@@ -361,6 +371,19 @@ function update(dt){
       }else{
         const dd=dist(e.x,e.y,e.lx,e.ly);
         if(dd>6){e.a=Math.atan2(e.ly-e.y,e.lx-e.x);if(!moveEnt(e,Math.cos(e.a)*52*dt,Math.sin(e.a)*52*dt,3)){e.a+=rnd(-1.5,1.5)}}
+      }
+    }else if(e.wp){
+      const L=e.wp.length;
+      if(e.wait>0){e.wait-=dt;e.a=e.la+Math.sin(time*1.3+e.ph)*.6}
+      else{
+        const w=e.wp[e.wi],dd=dist(e.x,e.y,w.x,w.y);
+        const nxt=()=>{if(L>1){e.wi+=e.wd;if(e.wi>=L||e.wi<0){e.wd=-e.wd;e.wi+=2*e.wd}}};
+        if(dd<4){nxt();e.wait=rnd(.8,2.2);e.la=Math.atan2(e.wp[e.wi].y-e.y,e.wp[e.wi].x-e.x);e.stuck=0}
+        else{
+          e.a=Math.atan2(w.y-e.y,w.x-e.x);
+          if(moveEnt(e,Math.cos(e.a)*30*dt,Math.sin(e.a)*30*dt,3))e.stuck=0;
+          else{e.stuck+=dt;if(e.stuck>1){e.stuck=0;nxt()}}
+        }
       }
     }else{
       if(e.wait>0){e.wait-=dt;if(R()<dt*.8)e.a+=rnd(-1,1)}
@@ -753,7 +776,7 @@ function drawHUD(cx,cy){
     const mx=W-52,my=15;
     rect(ctx,'#000',mx-2,my-2,52,52);frameBox(ctx,mx-2,my-2,52,52,'#6c5eb5');
     ctx.imageSmoothingEnabled=true;ctx.drawImage(mm,mx,my,48,48);ctx.imageSmoothingEnabled=false;
-    for(const e of enemies)if(!e.dead){rect(ctx,e.st===1?'#ffd030':'#ff3030',Math.floor(mx+e.x/T/2),Math.floor(my+e.y/T/2),1,1)}
+    for(const e of enemies)if(!e.dead&&e.x>=cam.x&&e.x<=cam.x+W&&e.y>=cam.y&&e.y<=cam.y+H){rect(ctx,e.st===1?'#ffd030':'#ff3030',Math.floor(mx+e.x/T/2),Math.floor(my+e.y/T/2),1,1)}
     for(const b of objs){rect(ctx,'#000',mx+Math.floor(b.tx/2)-1,my+Math.floor(b.ty/2)-1,4,4);rect(ctx,b.done?'#80e060':(b.kind==='depot'?'#ff9a20':b.kind==='hut'?'#5ad8f0':'#ff4040'),mx+Math.floor(b.tx/2),my+Math.floor(b.ty/2),2,2)}
     rect(ctx,'#fff',Math.floor(mx+LZ.x/T/2-2),Math.floor(my+LZ.y/T/2-1),4,2);
     if((time*4|0)%2){rect(ctx,'#000',Math.floor(mx+P.x/T/2-2),Math.floor(my+P.y/T/2-2),4,4);rect(ctx,'#fff',Math.floor(mx+P.x/T/2-1),Math.floor(my+P.y/T/2-1),2,2)}
