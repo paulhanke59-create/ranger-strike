@@ -53,7 +53,8 @@ addEventListener('keyup',e=>{keys[e.code]=false});
 const was=c=>!!hit[c];
 let touchMode=false;
 const tp={jid:null,jx:0,jy:0,dx:0,dy:0,btn:{},fire:false,nade:false,use:false,run:false};
-function layoutBtn(){}
+const PAD={x:274,y:H-46,r:34};
+function layoutBtn(){PAD.x=W-46}
 const BTN={fire:{x:36,y:H-38,r:22,l:'FEUER'},nade:{x:80,y:H-26,r:14,l:'GRN'},use:{x:24,y:H-84,r:14,l:'AKT'},run:{x:76,y:H-66,r:13,l:'RENN'}};
 function lp(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height]}
 cv.addEventListener('pointerdown',e=>{
@@ -63,7 +64,7 @@ cv.addEventListener('pointerdown',e=>{
   if(state==='win'||state==='lose'){if(endT>0.6)state='menu';return}
   if(state==='pause'){state='play';return}
   for(const k in BTN){const b=BTN[k];if(Math.hypot(x-b.x,y-b.y)<b.r+4){tp.btn[e.pointerId]=k;if(k==='fire')tp.fire=true;if(k==='nade')tp.nade=true;if(k==='use')tp.use=true;if(k==='run')tp.run=!tp.run;try{cv.setPointerCapture(e.pointerId)}catch(_){}return}}
-  if(x>W*0.3&&tp.jid===null){tp.jid=e.pointerId;tp.jx=x;tp.jy=y;tp.dx=tp.dy=0;try{cv.setPointerCapture(e.pointerId)}catch(_){}}
+  if(Math.hypot(x-PAD.x,y-PAD.y)<PAD.r+18&&tp.jid===null){tp.jid=e.pointerId;tp.jx=x;tp.jy=y;tp.dx=tp.dy=0;try{cv.setPointerCapture(e.pointerId)}catch(_){}}
 });
 cv.addEventListener('pointermove',e=>{if(e.pointerId===tp.jid){const p=lp(e);tp.jx=p[0];tp.jy=p[1]}});
 const pUp=e=>{if(e.pointerType==='touch'&&!fsTried){fsTried=true;goFS()}if(e.pointerId===tp.jid){tp.jid=null;tp.dx=tp.dy=0}const k=tp.btn[e.pointerId];if(k){if(k==='fire')tp.fire=false;delete tp.btn[e.pointerId]}};
@@ -243,7 +244,7 @@ function update(dt){
   time+=dt;if(msgT>0)msgT-=dt;if(shake>0)shake-=dt;if(flash>0)flash-=dt;
 
   // Spieler
-  if(tp.jid!==null){const ddx=tp.jx-(P.x-cam.x),ddy=tp.jy-(P.y-cam.y),dl=Math.hypot(ddx,ddy);if(dl<6){tp.dx=tp.dy=0}else{const f=Math.min(1,(dl-6)/10);tp.dx=ddx/dl*f;tp.dy=ddy/dl*f}}
+  if(tp.jid!==null){const ddx=tp.jx-PAD.x,ddy=tp.jy-PAD.y,dl=Math.hypot(ddx,ddy);if(dl<5){tp.dx=tp.dy=0}else{const f=Math.min(1,(dl-5)/(PAD.r-14));tp.dx=ddx/dl*f;tp.dy=ddy/dl*f}}
   let mx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0)+tp.dx;
   let my=(keys.ArrowDown||keys.KeyS?1:0)-(keys.ArrowUp||keys.KeyW?1:0)+tp.dy;
   let l=Math.hypot(mx,my);if(l>1){mx/=l;my/=l;l=1}
@@ -713,7 +714,11 @@ function drawHUD(cx,cy){
 function drawTouch(){
   ctx.globalAlpha=.4;
   for(const k in BTN){const b=BTN[k];ctx.fillStyle=(k==='run'&&tp.run)?C.y:C.w;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,6.283);ctx.fill()}
-  if(tp.jid!==null){const sx=P.x-cam.x,sy=P.y-cam.y;ctx.fillStyle=C.w;for(let i=1;i<8;i++){const t=i/8;ctx.fillRect(Math.round(sx+(tp.jx-sx)*t),Math.round(sy+(tp.jy-sy)*t),1,1)}ctx.beginPath();ctx.arc(tp.jx,tp.jy,9,0,6.283);ctx.fill();ctx.fillStyle=C.k;ctx.beginPath();ctx.arc(tp.jx,tp.jy,4,0,6.283);ctx.fill()}
+  {const kx=PAD.x+tp.dx*(PAD.r-12),ky=PAD.y+tp.dy*(PAD.r-12);
+    ctx.fillStyle=C.w;ctx.beginPath();ctx.arc(PAD.x,PAD.y,PAD.r,0,6.283);ctx.fill();
+    ctx.globalAlpha=.25;ctx.fillStyle=C.k;ctx.beginPath();ctx.arc(PAD.x,PAD.y,PAD.r-4,0,6.283);ctx.fill();ctx.globalAlpha=.4;
+    ctx.fillStyle=C.w;ctx.fillRect(PAD.x-1,PAD.y-PAD.r+6,3,8);ctx.fillRect(PAD.x-1,PAD.y+PAD.r-14,3,8);ctx.fillRect(PAD.x-PAD.r+6,PAD.y-1,8,3);ctx.fillRect(PAD.x+PAD.r-14,PAD.y-1,8,3);
+    ctx.beginPath();ctx.arc(kx,ky,13,0,6.283);ctx.fill();ctx.fillStyle=C.k;ctx.beginPath();ctx.arc(kx,ky,5,0,6.283);ctx.fill()}
   ctx.globalAlpha=1;
   for(const k in BTN){const b=BTN[k];txt(b.l,b.x,b.y+3,C.k,'center',6)}
 }

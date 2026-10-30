@@ -14,7 +14,7 @@ Lokal testen: `docs/index.html` einfach im Browser öffnen.
 
 | Aktion | Tastatur | Touch |
 |---|---|---|
-| Laufen | Pfeile / WASD | Finger auf den Bildschirm (rechts): Figur läuft zum Finger |
+| Laufen | Pfeile / WASD | Steuerkreis rechts unten (Daumen darin ziehen) |
 | Feuer | Leertaste | FEUER |
 | Handgranate | G | GRN |
 | Aktion (Ladung legen, befreien, Dokumente) | E | AKT |
