@@ -22,14 +22,26 @@ Lokal testen: `docs/index.html` einfach im Browser öffnen.
 | Schleichen (schwerer zu entdecken) | C | – |
 | Pause / Minimap | P / M | – |
 
-## Missionen
+## Spielablauf
+
+Das Spiel besteht aus 4 Levels, die nacheinander gespielt werden. Jedes Level startet mit voller Energie und Munition. Wer stirbt, startet das Level neu. Nach jedem geschafften Level wird der Fortschritt automatisch gespeichert (Menü: „Weiter").
+
+Vor Level 1 wählst du einen Skill, der für alle Levels gilt:
+
+| Skill | Wirkung |
+|---|---|
+| Treffsicherheit | Zielhilfe, keine Streuung, schnelleres Feuer, mehr Munition |
+| Tarnung | Gegner sehen dich nur aus der Nähe, leisere Schüsse, schnelleres Schleichen |
+| Sprengmeister | Mehr Granaten, größerer Radius, kurze Zündschnur, weniger Selbstschaden |
+
+Levels:
 
 1. **Funkenflug** – 3 Munitionsdepots sprengen (Ladung legen mit E und wegrennen, oder Granate werfen)
 2. **Freiheit** – Gefangene aus 3 Lagern befreien
 3. **Schattenakte** – Dokumente aus 2 Kommandoposten stehlen
 4. **Großer Schlag** – gemischter Einsatz
 
-Nach allen Zielen: zurück zur Landezone (weißes H), dann ist der Einsatz geschafft.
+Nach allen Zielen: zurück zur Landezone (weißes H), dann ist das Level geschafft.
 
 ## Android-App (Capacitor)
 
