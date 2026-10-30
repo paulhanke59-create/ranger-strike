@@ -14,7 +14,7 @@ Lokal testen: `docs/index.html` einfach im Browser öffnen.
 
 | Aktion | Tastatur | Touch |
 |---|---|---|
-| Laufen | Pfeile / WASD | Joystick (linke Bildschirmhälfte) |
+| Laufen | Pfeile / WASD | Finger auf den Bildschirm (rechts): Figur läuft zum Finger |
 | Feuer | Leertaste | FEUER |
 | Handgranate | G | GRN |
 | Aktion (Ladung legen, befreien, Dokumente) | E | AKT |
