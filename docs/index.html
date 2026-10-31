@@ -1026,20 +1026,20 @@ function buildTrack(d){
   if(d.lead){let pos=0;for(const e of d.lead){if(e[0]&&pos<len)ev[pos].push({t:d.lt||'brass',n:e[0],l:e[1]*.95,v:d.lv});pos+=e[1]}if(pos!==len)console.warn('Musik: Laenge',d.name,pos,len)}
   return{bpm:d.bpm,len,ev,drums:d.drums,dv:d.dv||.05};
 }
-const EM={r:40,t:[64,67,71]},CM={r:36,t:[60,64,67]},DM_={r:38,t:[62,66,69]},BM={r:35,t:[63,66,71]};
-const LM=[[71,6],[76,2],[79,8],[84,6],[79,2],[76,8],[74,4],[78,4],[81,8],[83,6],[81,2],[79,4],[76,4],
-  [71,6],[76,2],[79,8],[84,4],[83,2],[84,2],[88,8],[86,4],[84,4],[81,4],[78,4],[83,2],[78,2],[75,4],[78,8]];
-const RA=[[76,3],[76,1],[79,2],[76,2],[74,2],[71,2],[74,4]],RB=[[72,3],[72,1],[76,2],[72,2],[71,2],[67,2],[71,4]],
-  RD=[[74,3],[74,1],[78,2],[74,2],[81,2],[78,2],[74,4]],RE=[[75,3],[75,1],[78,2],[75,2],[83,2],[78,2],[75,4]];
+const EM={r:40,t:[64,67,71]},FM={r:41,t:[65,69,72]},DN={r:38,t:[62,65,69]},BM={r:35,t:[63,66,71]};
+const LM=[[64,4],[64,2],[67,2],[64,4],[71,4],[65,4],[65,2],[69,2],[65,4],[72,4],[64,4],[67,2],[71,2],[76,4],[75,2],[71,2],[74,6],[72,2],[69,4],[65,4],
+  [64,4],[64,2],[67,2],[64,4],[71,4],[65,4],[65,2],[69,2],[65,4],[72,4],[74,4],[74,2],[77,2],[74,4],[81,4],[75,4],[75,2],[78,2],[83,4],[78,2],[75,2]];
+const RA=[[64,3],[64,1],[65,2],[64,2],[71,2],[64,2],[63,4]],RB=[[65,3],[65,1],[68,2],[65,2],[72,2],[65,2],[64,4]],
+  RD=[[62,3],[62,1],[65,2],[62,2],[69,2],[62,2],[61,4]],RE=[[63,3],[63,1],[66,2],[63,2],[71,2],[66,2],[63,4]];
 const LA=[].concat(RA,RB,RA,RB,RA,RB,RD,RE);
-const LC=[[0,16],[59,12],[0,4],[0,16],[60,8],[59,8],[0,16],[64,12],[0,4],[0,16],[62,16]];
+const LC=[[0,16],[52,12],[0,4],[0,16],[53,8],[52,8],[0,16],[51,12],[0,4],[0,16],[52,16]];
 const TRACKS={
-  menu:buildTrack({name:'menu',bpm:100,bars:8,chords:[EM,CM,DM_,EM,EM,CM,DM_,BM],bass:[0,null,0,0,null,0,12,null,0,null,0,0,null,0,12,0],bl:1.5,bv:.095,
-    pad:.03,lead:LM,lt:'brass',lv:.055,drums:'K-h-S-h-K-hkS-hh',dv:.05}),
-  calm:buildTrack({name:'calm',bpm:92,bars:8,chords:[EM,EM,CM,EM,EM,EM,DM_,BM],bass:[0,null,0,null,0,null,0,null,0,null,0,null,0,null,12,null],bl:1.2,bv:.07,
-    pad:.022,lead:LC,lt:'brass',lv:.04,drums:'k-------h-------',dv:.032}),
-  action:buildTrack({name:'action',bpm:150,bars:8,chords:[EM,CM,EM,CM,EM,CM,DM_,BM],bass:[0,0,12,0,0,12,0,0,0,0,12,0,0,12,0,7],bl:.9,bv:.1,
-    pad:.02,stab:{at:[0,6,8,14],l:1.5,v:.02},lead:LA,lt:'brass',lv:.05,drums:'KhhhShhhKhKhShhh',dv:.058})
+  menu:buildTrack({name:'menu',bpm:140,bars:8,chords:[EM,FM,EM,DN,EM,FM,DN,BM],bass:[0,0,12,0,0,12,0,0,0,0,12,0,0,12,0,7],bl:.9,bv:.1,
+    pad:.03,lead:LM,lt:'brass',lv:.055,drums:'KhhhShhhKhKhShKh',dv:.055}),
+  calm:buildTrack({name:'calm',bpm:118,bars:8,chords:[EM,EM,FM,EM,EM,EM,DN,BM],bass:[0,null,0,null,0,0,null,0,0,null,0,null,0,0,null,12],bl:.9,bv:.075,
+    pad:.025,lead:LC,lt:'brass',lv:.04,drums:'k-h-k-h-k-h-kkh-',dv:.04}),
+  action:buildTrack({name:'action',bpm:176,bars:8,chords:[EM,FM,EM,FM,EM,FM,DN,BM],bass:[0,0,12,0,0,12,0,0,0,0,12,0,0,12,0,7],bl:.85,bv:.105,
+    pad:.02,stab:{at:[0,6,8,14],l:1.3,v:.02},lead:LA,lt:'brass',lv:.05,drums:'KhKhShhKKhKhShKh',dv:.06})
 };
 function playStep(tr,s,t){
   const sd=60/tr.bpm/4;
