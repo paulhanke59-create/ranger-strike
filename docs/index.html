@@ -905,12 +905,13 @@ function listScreen(title,items,y0,step,footA,footB){
     rect(ctx,'rgba(8,6,28,.92)',20+o,y,280,30);frameBox(ctx,20+o,y,280,30,'#6c5eb5');
     rect(ctx,'#ffd060',24+o,y+7,15,15);rect(ctx,'#a07a20',24+o,y+20,15,2);
     ctx.fillStyle='#2a1a00';rawText(ctx,String(i+1),27+o,y+8,2);
-    txt(s2.name,46+o,y+8,'#fff');txt(s2.d1,46+o,y+18,'#9fb0e0');txt(s2.d2,46+o,y+27,'#9fb0e0');
+    if(s2.d1){txt(s2.name,46+o,y+8,'#fff');txt(s2.d1,46+o,y+18,'#9fb0e0');txt(s2.d2,46+o,y+27,'#9fb0e0')}else txt(s2.name,46+o,y+17,'#fff');
   });
+  if(!footA)return;
   if(touchMode){txt(footA,W/2,183,'#ffe070','center');txt('UNTEN ANTIPPEN = ZURUECK',W/2,194,'#b8c4e8','center')}
   else{txt('ANTIPPEN ODER ZIFFERNTASTE',W/2,183,'#ffe070','center');txt(footB,W/2,194,'#b8c4e8','center')}
 }
-function drawDiff(){listScreen('SCHWIERIGKEIT',DIFFS,18,31,'ESC = ZURUECK','ESC = ZURUECK')}
+function drawDiff(){listScreen('SCHWIERIGKEIT',DIFFS.map(d=>({name:d.name})),18,31,'','')}
 function drawSkill(){
   const n=offer.length,gl=single?'GILT FUER DIESE MISSION':'GILT FUER ALLE LEVEL';
   listScreen('WAEHLE DEINEN SKILL',offer.map(i=>SKILLS[i]),n>2?18:34,n>2?31:40,gl,gl);
