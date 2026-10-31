@@ -890,27 +890,36 @@ function bgSold(x,y,d,fr){
   rect(ctx,'#6f9a78',x,y-7,3,2);rect(ctx,'#4c7a5a',x,y-5,3,4);rect(ctx,'#0a1410',x+(d>0?2:-3),y-4,4,1);
   rect(ctx,'#35573f',x+(fr?0:1),y-1,1,2);rect(ctx,'#35573f',x+(fr?2:1),y-1,1,2);
 }
-function drawMenuAction(){
-  const t=performance.now()/1000,fr=Math.floor(t*14)%2;
-  let c=bgCycle(t,6,0,.9);
-  if(c){const x=20+bgHash(c.n)*(W-40),y=112+bgHash(c.n+9)*8,r=2+c.u*16;
-    ctx.globalAlpha=(1-c.u)*.85;fillCirc(ctx,'#ff7a28',x,y,r);fillCirc(ctx,'#ffe6a0',x,y,r*.55);
-    ctx.globalAlpha=(1-c.u)*.35;rect(ctx,'#ffb060',0,y-8,W,16);ctx.globalAlpha=1;
-    ctx.globalAlpha=Math.min(.7,(1-c.u));for(let i=0;i<6;i++){const a=i*1.05+c.n;rect(ctx,'#ffd070',Math.round(x+Math.cos(a)*r*1.6),Math.round(y-Math.abs(Math.sin(a))*r*1.6+c.u*c.u*10),1,1)}ctx.globalAlpha=1}
-  c=bgCycle(t,11,0,9);
-  if(c){for(let i=0;i<3;i++){const u=(c.u*9-i*.9)/7;if(u<0||u>1)continue;
-    const x=Math.round(40+bgHash(c.n)*(W-110)+i*17+Math.sin(u*9+i)*5),y=Math.round(-10+u*160);
-    ctx.globalAlpha=u>.88?(1-u)/.12:1;bgPara(x,y,fr);ctx.globalAlpha=1}}
-  c=bgCycle(t,17,3,9);
-  if(c){const d=c.n%2?1:-1,x=d>0?-25+c.u*(W+50):W+25-c.u*(W+50);bgHeli(Math.round(x),Math.round(30+Math.sin(c.u*12)*2+bgHash(c.n)*12),d,Math.floor(t*20)%2)}
-  c=bgCycle(t,23,9,2.2);
-  if(c){const d=c.n%2?1:-1,x=d>0?-30+c.u*(W+90):W+30-c.u*(W+90);bgJet(Math.round(x),Math.round(14+bgHash(c.n)*14),d,fr)}
-  for(let i=0;i<3;i++){const x=((t*30-i*12)%(W+60+36))-18;bgSold(Math.round(x),176+(i%2)*2,1,Math.floor(t*9+i)%2)}
-  for(let i=0;i<2;i++){const x=W+18-((t*24+i*14)%(W+60+36));bgSold(Math.round(x),190,-1,Math.floor(t*9+i*3)%2)}
+const BG_ACTS=[['sold',24],['gap',3],['para',17],['gap',3],['heli',20],['gap',3],['expl',10],['gap',3],['jet',5],['gap',4],['sold2',24],['gap',3],['heli',20],['gap',3],['para',17],['gap',4]];
+const BG_PER=BG_ACTS.reduce((a,b)=>a+b[1],0);
+function drawMenuAction(layer){layer=layer||'all';
+  const t=performance.now()/1000,fr=Math.floor(t*10)%2,cyc=Math.floor(t/BG_PER);let q=t%BG_PER,act=null,u=0;
+  for(const a of BG_ACTS){if(q<a[1]){act=a[0];u=q/a[1];q=q;break}q-=a[1]}
+  const L=q;
+  const air=act==='heli'||act==='jet';if(layer==='air'&&!air||layer==='back'&&air)return;
+  if(act==='sold'||act==='sold2'){
+    const d=act==='sold'?1:-1;
+    for(let i=0;i<4;i++){const f=u*(W+90)-i*13,x=d>0?f-20:W+20-f;if(f<-20||f>W+60)continue;bgSold(Math.round(x),178+(i%2)*3,d,Math.floor(t*4+i)%2)}
+  }else if(act==='para'){
+    for(let i=0;i<3;i++){const v=(L-i*2.4)/11;if(v<0||v>1)continue;
+      const x=Math.round(50+bgHash(cyc*7+i)*(W-100)+Math.sin(v*5+i*2)*6),y=Math.round(-10+v*160);
+      ctx.globalAlpha=v>.9?(1-v)/.1:1;bgPara(x,y,fr);ctx.globalAlpha=1}
+  }else if(act==='heli'){
+    const d=(cyc+(act==='heli'&&q>0?0:0))%2?1:-1,x=d>0?-25+u*(W+50):W+25-u*(W+50);
+    bgHeli(Math.round(x),Math.round(62+Math.sin(u*9)*1.5),d,Math.floor(t*16)%2);
+  }else if(act==='expl'){
+    for(let k=0;k<3;k++){const v=(L-k*3)/1.9;if(v<0||v>1)continue;
+      const x=30+bgHash(cyc*5+k)*(W-60),y=112+bgHash(cyc*3+k+9)*8,r=2+v*15;
+      ctx.globalAlpha=(1-v)*.85;fillCirc(ctx,'#ff7a28',x,y,r);fillCirc(ctx,'#ffe6a0',x,y,r*.55);
+      ctx.globalAlpha=(1-v)*.3;rect(ctx,'#ffb060',0,y-8,W,16);ctx.globalAlpha=1;
+      ctx.globalAlpha=1-v;for(let i=0;i<6;i++){const a=i*1.05+k;rect(ctx,'#ffd070',Math.round(x+Math.cos(a)*r*1.6),Math.round(y-Math.abs(Math.sin(a))*r*1.6+v*v*10),1,1)}ctx.globalAlpha=1}
+  }else if(act==='jet'){
+    const d=cyc%2?1:-1,x=d>0?-30+u*(W+90):W+30-u*(W+90);bgJet(Math.round(x),Math.round(16+bgHash(cyc)*14),d,fr);
+  }
 }
 function drawMenu(){
   if(!MB)MB=makeMenuBG();if(!LOGO)LOGO=makeLogo();
-  ctx.drawImage(MB,0,0);drawMenuAction();
+  ctx.drawImage(MB,0,0);drawMenuAction('back');
   ctx.drawImage(LOGO,Math.round(W/2-LOGO.width/2),6);
   txt('EINZELKAEMPFER HINTER DEN FEINDLICHEN LINIEN',W/2,50,'#d8e4ff','center');
   const o=Math.round((W-320)/2);
@@ -923,6 +932,7 @@ function drawMenu(){
     txt(b.label,64+o,y+15,'#fff');
     ctx.globalAlpha=1;
   });
+  drawMenuAction('air');
 }
 function drawMissions(){
   if(!MB)MB=makeMenuBG();
