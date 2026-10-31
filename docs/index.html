@@ -858,13 +858,9 @@ function drawMenu(){
     rect(ctx,'rgba(8,6,28,.86)',40+o,y,240,24);frameBox(ctx,40+o,y,240,24,'#6c5eb5');
     rect(ctx,'#ffd060',43+o,y+4,15,15);rect(ctx,'#a07a20',43+o,y+17,15,2);
     ctx.fillStyle='#2a1a00';rawText(ctx,String(i+1),46+o,y+5,2);
-    txt(b.label,64+o,y+10,'#fff');txt(b.sub,64+o,y+20,'#9fb0e0');
+    txt(b.label,64+o,y+15,'#fff');
     ctx.globalAlpha=1;
   });
-  rect(ctx,'rgba(0,0,0,.72)',0,160,W,40);
-  txt('PFEILE/WASD: LAUFEN   LEERTASTE: FEUER',W/2,171,'#b8c4e8','center');
-  txt('G: GRANATE   E: AKTION   SHIFT: RENNEN',W/2,181,'#b8c4e8','center');
-  txt('F: VOLLBILD',W-3,9,'#b8c4e8','right');txt('ANTIPPEN ODER ENTER ZUM STARTEN',W/2,193,((Date.now()/500)|0)%2?'#ffe070':'#fff','center');
 }
 function drawMissions(){
   if(!MB)MB=makeMenuBG();
