@@ -26,7 +26,7 @@ Lokal testen: `docs/index.html` einfach im Browser öffnen.
 
 ## Spielablauf
 
-Das Spiel besteht aus 4 Levels, die nacheinander gespielt werden. Jedes Level startet mit voller Energie und Munition. Wer stirbt, startet das Level neu. Nach jedem geschafften Level wird der Fortschritt automatisch gespeichert (Menü: „Weiter").
+Das Spiel besteht aus 12 Levels, die nacheinander gespielt werden. Jedes Level startet mit voller Energie und Munition. Wer stirbt, startet das Level neu. Nach jedem geschafften Level wird der Fortschritt automatisch gespeichert (Menü: „Weiter").
 
 Das Menü bietet: 1 Neue Mission (Kampagne ab Level 1), 2 Letzte Mission fortsetzen (Speicherstand im Browser) und 3 Einzelmission starten (ohne Speicherstand). Vor dem Start wählst du die Schwierigkeit, danach (je nach Stufe) einen Skill:
 
@@ -53,6 +53,16 @@ Levels:
 2. **Freiheit** – Gefangene aus 3 Lagern befreien
 3. **Schattenakte** – Dokumente aus 2 Kommandoposten stehlen
 4. **Großer Schlag** – gemischter Einsatz
+5. **Brückenschlag** – 2 Brücken über den Fluss sprengen (nicht auf der Brücke stehen bleiben!)
+6. **Funkstille** – 3 Funkmasten zerstören; je weniger Masten stehen, desto weniger Verstärkung kommt
+7. **Offizier** – den General (goldene Markierung, mehrere Treffer nötig) mit seinen Leibwächtern ausschalten
+8. **Geiselrettung** – Geisel befreien und lebend zur Landezone bringen; sie folgt dir, kann aber getroffen werden
+9. **Geisterflug** – 3 Dokumente holen, ohne dass dich ein Gegner bemerkt (keine Verstärkung, jede Entdeckung beendet den Einsatz)
+10. **Nachteinsatz** – dunkle Karte, sichtbar sind nur du und die Lichtkegel der Wachen
+11. **Fahrzeugjagd** – 3 geparkte Fahrzeuge (Jeep, Lkw, Panzer) sprengen
+12. **Sumpfflucht** – Akte holen und durch den langsamen Sumpf vor den Verfolgern zur Landezone fliehen
+
+In der Einzelmission-Auswahl blätterst du mit den Pfeil-Knöpfen (Tastatur: Pfeil links/rechts).
 
 Gegner sehen dich, rufen „Enemy!" und holen Verstärkung. Auch Schüsse und Explosionen locken neue Gegner an. Verlierst du sie, ziehen sich die Verstärkungen wieder zurück. Die Gegner laufen Patrouille. Auf der Minimap siehst du nur die Gegner, die gerade im Bild sind (gelb = alarmiert).
 
