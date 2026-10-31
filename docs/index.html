@@ -861,12 +861,56 @@ function makeMenuBG(){
   for(let x=-4;x<W+6;x+=7){const hh=22+((x*7)&7)*2;pine(g,x+((x*5)&3),152,hh,'#0e1f1a','#17332a')}
   for(let x=0;x<W+8;x+=11){const hh=30+((x*13)&7)*2;pine(g,x+((x*3)&5),166,hh,'#0a1612','#10261e')}
   rect(g,'#07100c',0,166,W,34);
-  g.fillStyle='#07070f';fillEll(g,'#07070f',266,28,12,5);rect(g,'#07070f',276,26,16,2);rect(g,'#07070f',290,22,2,6);rect(g,'#07070f',258,23,16,1);rect(g,'#07070f',265,21,2,3);
   return c;
+}
+/* ---------- Menue-Hintergrund: bewegte Action ---------- */
+function bgHash(n){return((Math.imul(n+7,2654435761)>>>0)%1000)/1000}
+function bgCycle(t,per,off,dur){const q=t+off,n=Math.floor(q/per),u=(q-n*per)/dur;return u<1?{u,n}:null}
+function bgHeli(x,y,d,fr){
+  fillEll(ctx,'#05050c',x,y,8,4);rect(ctx,'#1c2c52',x+d*4-1,y-2,3,2);
+  rect(ctx,'#05050c',d>0?x-20:x+8,y-1,12,2);rect(ctx,'#05050c',d>0?x-21:x+19,y-5,2,5);
+  const len=fr?22:10;rect(ctx,'#05050c',x-len/2,y-6,len,1);rect(ctx,'#05050c',x,y-5,1,2);rect(ctx,'#05050c',x-6,y+5,12,1);rect(ctx,'#05050c',x-4,y+3,1,2);rect(ctx,'#05050c',x+3,y+3,1,2);
+  rect(ctx,fr?'#ff5030':'#802010',d>0?x-21:x+19,y-5,2,1);
+}
+function bgJet(x,y,d,fl){
+  const tl=-d;
+  ctx.globalAlpha=.28;rect(ctx,'#ffffff',tl>0?x+8:x-70,y,62,1);ctx.globalAlpha=1;
+  rect(ctx,'#0a0a14',x-9,y-1,18,2);rect(ctx,'#0a0a14',d>0?x+9:x-11,y,2,1);
+  for(let j=1;j<=6;j++){rect(ctx,'#0a0a14',x-2+tl*j,y-1-j,5,1);rect(ctx,'#0a0a14',x-2+tl*j,y+j,5,1)}
+  rect(ctx,'#0a0a14',x+tl*7,y-4,2,3);
+  const L=fl?8:5;rect(ctx,'#ff9a30',tl>0?x+9:x-9-L,y-1,L,2);rect(ctx,'#ffe890',tl>0?x+9:x-9-Math.floor(L/2),y,Math.floor(L/2),1);
+}
+function bgPara(x,y,fr){
+  const c='#6f7f3c',c2='#98aa52';
+  rect(ctx,c,x-3,y-9,7,1);rect(ctx,c,x-5,y-8,11,1);rect(ctx,c2,x-6,y-7,13,1);rect(ctx,c,x-6,y-6,13,1);rect(ctx,c2,x-6,y-5,3,1);rect(ctx,c2,x,y-5,1,1);rect(ctx,c2,x+4,y-5,3,1);
+  ctx.globalAlpha=.6;for(let i=0;i<5;i++){rect(ctx,'#cfd8b0',x-6+Math.round(i*1.4),y-4+i,1,1);rect(ctx,'#cfd8b0',x+6-Math.round(i*1.4),y-4+i,1,1)}ctx.globalAlpha=1;
+  rect(ctx,'#1d3524',x-1,y+1,3,2);rect(ctx,'#2d4a35',x-1,y+3,3,4);rect(ctx,'#1d3524',x-1+(fr?1:0),y+7,1,2);rect(ctx,'#1d3524',x+1-(fr?1:0),y+7,1,2);
+}
+function bgSold(x,y,d,fr){
+  rect(ctx,'#6f9a78',x,y-7,3,2);rect(ctx,'#4c7a5a',x,y-5,3,4);rect(ctx,'#0a1410',x+(d>0?2:-3),y-4,4,1);
+  rect(ctx,'#35573f',x+(fr?0:1),y-1,1,2);rect(ctx,'#35573f',x+(fr?2:1),y-1,1,2);
+}
+function drawMenuAction(){
+  const t=performance.now()/1000,fr=Math.floor(t*14)%2;
+  let c=bgCycle(t,6,0,.9);
+  if(c){const x=20+bgHash(c.n)*(W-40),y=112+bgHash(c.n+9)*8,r=2+c.u*16;
+    ctx.globalAlpha=(1-c.u)*.85;fillCirc(ctx,'#ff7a28',x,y,r);fillCirc(ctx,'#ffe6a0',x,y,r*.55);
+    ctx.globalAlpha=(1-c.u)*.35;rect(ctx,'#ffb060',0,y-8,W,16);ctx.globalAlpha=1;
+    ctx.globalAlpha=Math.min(.7,(1-c.u));for(let i=0;i<6;i++){const a=i*1.05+c.n;rect(ctx,'#ffd070',Math.round(x+Math.cos(a)*r*1.6),Math.round(y-Math.abs(Math.sin(a))*r*1.6+c.u*c.u*10),1,1)}ctx.globalAlpha=1}
+  c=bgCycle(t,11,0,9);
+  if(c){for(let i=0;i<3;i++){const u=(c.u*9-i*.9)/7;if(u<0||u>1)continue;
+    const x=Math.round(40+bgHash(c.n)*(W-110)+i*17+Math.sin(u*9+i)*5),y=Math.round(-10+u*160);
+    ctx.globalAlpha=u>.88?(1-u)/.12:1;bgPara(x,y,fr);ctx.globalAlpha=1}}
+  c=bgCycle(t,17,3,9);
+  if(c){const d=c.n%2?1:-1,x=d>0?-25+c.u*(W+50):W+25-c.u*(W+50);bgHeli(Math.round(x),Math.round(30+Math.sin(c.u*12)*2+bgHash(c.n)*12),d,Math.floor(t*20)%2)}
+  c=bgCycle(t,23,9,2.2);
+  if(c){const d=c.n%2?1:-1,x=d>0?-30+c.u*(W+90):W+30-c.u*(W+90);bgJet(Math.round(x),Math.round(14+bgHash(c.n)*14),d,fr)}
+  for(let i=0;i<3;i++){const x=((t*30-i*12)%(W+60+36))-18;bgSold(Math.round(x),176+(i%2)*2,1,Math.floor(t*9+i)%2)}
+  for(let i=0;i<2;i++){const x=W+18-((t*24+i*14)%(W+60+36));bgSold(Math.round(x),190,-1,Math.floor(t*9+i*3)%2)}
 }
 function drawMenu(){
   if(!MB)MB=makeMenuBG();if(!LOGO)LOGO=makeLogo();
-  ctx.drawImage(MB,0,0);
+  ctx.drawImage(MB,0,0);drawMenuAction();
   ctx.drawImage(LOGO,Math.round(W/2-LOGO.width/2),6);
   txt('EINZELKAEMPFER HINTER DEN FEINDLICHEN LINIEN',W/2,50,'#d8e4ff','center');
   const o=Math.round((W-320)/2);
@@ -882,7 +926,7 @@ function drawMenu(){
 }
 function drawMissions(){
   if(!MB)MB=makeMenuBG();
-  ctx.drawImage(MB,0,0);rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
+  ctx.drawImage(MB,0,0);drawMenuAction();rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
   const o=Math.round((W-320)/2);
   txt('MISSION WAEHLEN',W/2,14,'#ffe070','center',12);
   MISSIONS.forEach((m,i)=>{
@@ -897,7 +941,7 @@ function drawMissions(){
 }
 function listScreen(title,items,y0,step,footA,footB){
   if(!MB)MB=makeMenuBG();
-  ctx.drawImage(MB,0,0);rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
+  ctx.drawImage(MB,0,0);drawMenuAction();rect(ctx,'rgba(0,0,0,.55)',0,0,W,H);
   const o=Math.round((W-320)/2);
   txt(title,W/2,14,'#ffe070','center',12);
   items.forEach((s2,i)=>{
