@@ -22,6 +22,7 @@ Lokal testen: `docs/index.html` einfach im Browser öffnen.
 | Schleichen (schwerer zu entdecken) | C | – |
 | Pause / Minimap | P / M | – |
 | Mission abbrechen | Esc | roter Knopf oben rechts |
+| Musik an/aus | N | Lautsprecher-Knopf oben rechts |
 
 ## Spielablauf
 
@@ -79,3 +80,7 @@ Tipps:
 - Fahrzeuge und Minen als Gegner
 - Highscore-Liste (localStorage)
 - Mehr Waffen und Missionsbriefing vor dem Start
+
+## Musik
+
+Die Musik besteht aus eigenen Chiptune-Stücken, die live per WebAudio erzeugt werden (Menü-Thema, ruhiges Einsatz-Thema, Action-Thema bei Alarm, kurze Fanfaren für Sieg und Niederlage). Es sind keine Melodien aus anderen Spielen.
