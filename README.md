@@ -36,7 +36,7 @@ Das Menü bietet: 1 Neue Mission (Kampagne ab Level 1), 2 Letzte Mission fortset
 | Nicht ganz einfach | etwas weniger | 2 zufällig ausgewählte zur Auswahl |
 | Normal | normal | keiner |
 | Schwer | mehr | keiner |
-| Selbstmord | viel mehr | keiner, dafür viel Munition und mehr Erste-Hilfe-Kästen |
+| Rambo | viel mehr | keiner, dafür viel Munition und mehr Erste-Hilfe-Kästen |
 
 Skills:
 
