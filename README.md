@@ -27,7 +27,7 @@ Lokal testen: `docs/index.html` einfach im Browser öffnen.
 
 Das Spiel besteht aus 4 Levels, die nacheinander gespielt werden. Jedes Level startet mit voller Energie und Munition. Wer stirbt, startet das Level neu. Nach jedem geschafften Level wird der Fortschritt automatisch gespeichert (Menü: „Weiter").
 
-Im Menü kannst du die Kampagne spielen oder eine **einzelne Mission** auswählen (ohne Fortschrittsspeicherung). Vor dem Start wählst du einen Skill, der für alle Levels bzw. die gewählte Mission gilt:
+Das Menü bietet: 1 Neue Mission (Kampagne ab Level 1), 2 Letzte Mission fortsetzen (Speicherstand im Browser) und 3 Einzelmission starten (ohne Speicherstand). Vor dem Start wählst du einen Skill, der für alle Levels bzw. die gewählte Mission gilt:
 
 | Skill | Wirkung |
 |---|---|

@@ -184,6 +184,7 @@ function spawnPicks(){
 }
 
 function startMission(i){
+  if(!single){save={lvl:i,skill:skill,total:total};writeSave()}
   mIdx=i;mission=MISSIONS[i];
   genMap(i);
   P={x:LZ.x,y:LZ.y-24,a:-Math.PI/2,hp:100+(skill===3?50:0),maxHp:100+(skill===3?50:0),st:100,ammo:80+(skill===0?20:0),nades:8+(skill===2?4:0),maxA:99+(skill===0?25:0),maxG:9+(skill===2?5:0),cd:0,run:false,sneak:false,exh:false,step:0,moving:false};
@@ -281,12 +282,15 @@ function winGame(){
   state='win';endT=0;msgT=0;tone(660,.4,'square',.05,330);
 }
 const SAVE_KEY='rangerstrike_save';
-function loadSave(){try{const j=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(j&&j.lvl>0&&j.lvl<MISSIONS.length&&j.skill>=0&&j.skill<SKILLS.length)return j}catch(e){}return null}
+function loadSave(){try{const j=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(j&&j.lvl>=0&&j.lvl<MISSIONS.length&&j.skill>=0&&j.skill<SKILLS.length)return j}catch(e){}return null}
 function writeSave(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
 function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
 save=loadSave();
-function menuButtons(){const l=[];if(save)l.push({k:'cont',label:'WEITER: LEVEL '+(save.lvl+1),sub:'SKILL: '+SKILLS[save.skill].name});l.push({k:'new',label:'KAMPAGNE',sub:'NEUES SPIEL - 4 LEVEL'});l.push({k:'single',label:'EINZELNE MISSION',sub:'EIN LEVEL AUSSUCHEN UND SPIELEN'});return l}
-function menuPick(i){const b=menuButtons()[i];if(!b)return;if(b.k==='cont'){single=false;skill=save.skill;total=save.total;startMission(save.lvl)}else if(b.k==='single'){single=true;state='missions'}else{single=false;state='skill'}}
+function menuButtons(){return[
+  {k:'new',label:'NEUE MISSION',sub:'KAMPAGNE VON LEVEL 1 AN'},
+  {k:'cont',label:'LETZTE MISSION FORTSETZEN',sub:save?('LEVEL '+(save.lvl+1)+' - SKILL: '+SKILLS[save.skill].name):'NOCH KEIN SPEICHERSTAND',off:!save},
+  {k:'single',label:'EINZELMISSION STARTEN',sub:'EIN LEVEL AUSSUCHEN UND SPIELEN'}]}
+function menuPick(i){const b=menuButtons()[i];if(!b||b.off)return;if(b.k==='cont'){single=false;skill=save.skill;total=save.total;startMission(save.lvl)}else if(b.k==='single'){single=true;state='missions'}else{single=false;state='skill'}}
 function pickMission(i){pendLvl=i;single=true;state='skill'}
 function releaseTouch(){tp.fire=false;tp.nade=false;tp.use=false;tp.jid=null;tp.dx=tp.dy=0;tp.btn={}}
 function askAbort(){if(state==='play'){releaseTouch();state='confirm'}}
@@ -301,7 +305,7 @@ function aimAssist(a){
 function rank(s){return s>=5200?'MAJOR':s>=4200?'HAUPTMANN':s>=3200?'LEUTNANT':s>=2300?'FELDWEBEL':'REKRUT'}
 
 function update(dt){
-  if(state==='menu'){const bl=menuButtons();let go=-1;for(let i=0;i<bl.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))go=i;if(go<0&&(was('Enter')||was('Space')))go=0;if(go>=0)menuPick(go);return}
+  if(state==='menu'){const bl=menuButtons();let go=-1;for(let i=0;i<bl.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))go=i;if(go<0&&(was('Enter')||was('Space')))go=save?1:0;if(go>=0)menuPick(go);return}
   if(state==='missions'){for(let i=0;i<MISSIONS.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))pickMission(i);if(was('Escape'))state='menu';return}
   if(state==='skill'){for(let i=0;i<SKILLS.length;i++)if(was('Digit'+(i+1))||was('Numpad'+(i+1)))pickSkill(i);if(was('Escape'))state=single?'missions':'menu';return}
   if(state==='win'||state==='lose'){endT+=dt;if(endT>0.6&&(was('Enter')||was('Space')))advance();updateFx(dt);return}
@@ -850,10 +854,12 @@ function drawMenu(){
   const o=Math.round((W-320)/2);
   menuButtons().forEach((b,i)=>{
     const y=70+i*28;
+    ctx.globalAlpha=b.off?.45:1;
     rect(ctx,'rgba(8,6,28,.86)',40+o,y,240,24);frameBox(ctx,40+o,y,240,24,'#6c5eb5');
     rect(ctx,'#ffd060',43+o,y+4,15,15);rect(ctx,'#a07a20',43+o,y+17,15,2);
     ctx.fillStyle='#2a1a00';rawText(ctx,String(i+1),46+o,y+5,2);
     txt(b.label,64+o,y+10,'#fff');txt(b.sub,64+o,y+20,'#9fb0e0');
+    ctx.globalAlpha=1;
   });
   rect(ctx,'rgba(0,0,0,.72)',0,160,W,40);
   txt('PFEILE/WASD: LAUFEN   LEERTASTE: FEUER',W/2,171,'#b8c4e8','center');
