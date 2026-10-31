@@ -27,7 +27,17 @@ Lokal testen: `docs/index.html` einfach im Browser öffnen.
 
 Das Spiel besteht aus 4 Levels, die nacheinander gespielt werden. Jedes Level startet mit voller Energie und Munition. Wer stirbt, startet das Level neu. Nach jedem geschafften Level wird der Fortschritt automatisch gespeichert (Menü: „Weiter").
 
-Das Menü bietet: 1 Neue Mission (Kampagne ab Level 1), 2 Letzte Mission fortsetzen (Speicherstand im Browser) und 3 Einzelmission starten (ohne Speicherstand). Vor dem Start wählst du einen Skill, der für alle Levels bzw. die gewählte Mission gilt:
+Das Menü bietet: 1 Neue Mission (Kampagne ab Level 1), 2 Letzte Mission fortsetzen (Speicherstand im Browser) und 3 Einzelmission starten (ohne Speicherstand). Vor dem Start wählst du die Schwierigkeit, danach (je nach Stufe) einen Skill:
+
+| Schwierigkeit | Gegner | Skills |
+|---|---|---|
+| Einfach | weniger | 4 zur Auswahl |
+| Nicht ganz einfach | etwas weniger | 2 zufällig ausgewählte zur Auswahl |
+| Normal | normal | keiner |
+| Schwer | mehr | keiner |
+| Selbstmord | viel mehr | keiner, dafür viel Munition und mehr Erste-Hilfe-Kästen |
+
+Skills:
 
 | Skill | Wirkung |
 |---|---|
@@ -35,7 +45,6 @@ Das Menü bietet: 1 Neue Mission (Kampagne ab Level 1), 2 Letzte Mission fortset
 | Tarnung | Gegner sehen dich nur aus der Nähe, leisere Schüsse, schnelleres Schleichen |
 | Sprengmeister | Mehr Granaten, größerer Radius, kurze Zündschnur, weniger Selbstschaden |
 | Resilienz | 150 statt 100 Leben, 15 % weniger Schaden, Kraft erholt sich schneller, Medikits heilen mehr |
-| Normal | Keine besonderen Fähigkeiten, ausgeglichene Grundwerte |
 
 Levels:
 
