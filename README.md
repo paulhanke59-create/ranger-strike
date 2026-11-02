@@ -93,4 +93,4 @@ Tipps:
 
 ## Musik
 
-Die Musik besteht aus eigenen Chiptune-Stücken, die live per WebAudio erzeugt werden (heroisches Menü-Thema im 80er-Action-Stil mit Synth-Bläsern, düsteres Einsatz-Thema, treibendes Action-Thema bei Alarm, kurze Fanfaren für Sieg und Niederlage). Es sind keine Melodien aus anderen Spielen.
+Die Musik besteht aus 7 eigenen Chiptune-Stücken (2 Menü, 3 Einsatz, 2 Action), die live per WebAudio erzeugt werden und sich abwechseln (heroisches Menü-Thema im 80er-Action-Stil mit Synth-Bläsern, düsteres Einsatz-Thema, treibendes Action-Thema bei Alarm, kurze Fanfaren für Sieg und Niederlage). Es sind keine Melodien aus anderen Spielen.
