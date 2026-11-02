@@ -57,7 +57,7 @@ Levels:
 6. **Funkstille** – 3 Funkmasten zerstören; je weniger Masten stehen, desto weniger Verstärkung kommt
 7. **Offizier** – den General (goldene Markierung, mehrere Treffer nötig) mit seinen Leibwächtern ausschalten
 8. **Geiselrettung** – Geisel befreien und lebend zur Landezone bringen; sie folgt dir, kann aber getroffen werden
-9. **Geisterflug** – 3 Dokumente holen, ohne dass dich ein Gegner bemerkt (keine Verstärkung, jede Entdeckung beendet den Einsatz)
+9. **Geisterflug** – den General (nur 3 Treffer, 3 Leibwächter) ausschalten, ohne länger entdeckt zu werden: eine Anzeige „Entdeckung“ füllt sich, solange dich ein Gegner sieht, und sinkt wieder, wenn du dich versteckst (keine Verstärkung)
 10. **Nachteinsatz** – dunkle Karte, sichtbar sind nur du und die Lichtkegel der Wachen
 11. **Fahrzeugjagd** – 3 geparkte Fahrzeuge (Jeep, Lkw, Panzer) sprengen
 12. **Sumpfflucht** – Akte holen und durch den langsamen Sumpf vor den Verfolgern zur Landezone fliehen
