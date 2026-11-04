@@ -52,13 +52,13 @@ Levels:
 1. **Funkenflug** – 3 Munitionsdepots sprengen (Ladung legen mit E und wegrennen, oder Granate werfen)
 2. **Geiselrettung** – Geisel befreien und lebend zur Landezone bringen; sie folgt dir, kann aber getroffen werden
 3. **Schattenakte** – Dokumente aus 2 Kommandoposten stehlen
-4. **Großer Schlag** – gemischter Einsatz
+4. **Nachteinsatz** – dunkle Karte, sichtbar sind nur du und die Lichtkegel der Wachen
 5. **Brückenschlag** – 2 Brücken über den Fluss sprengen (nicht auf der Brücke stehen bleiben!)
 6. **Funkstille** – 3 Funkmasten zerstören; je weniger Masten stehen, desto weniger Verstärkung kommt
 7. **Offizier** – den General (goldene Markierung, mehrere Treffer nötig) mit seinen Leibwächtern ausschalten
 8. **Freiheit** – Gefangene aus 3 Lagern befreien
 9. **Geisterflug** – den General (nur 3 Treffer, 3 Leibwächter) ausschalten, ohne länger entdeckt zu werden: eine Anzeige „Entdeckung“ füllt sich, solange dich ein Gegner sieht, und sinkt wieder, wenn du dich versteckst (keine Verstärkung)
-10. **Nachteinsatz** – dunkle Karte, sichtbar sind nur du und die Lichtkegel der Wachen
+10. **Großer Schlag** – gemischter Einsatz
 11. **Fahrzeugjagd** – 3 geparkte Fahrzeuge (Jeep, Lkw, Panzer) sprengen
 12. **Sumpfflucht** – Akte holen und durch den langsamen Sumpf vor den Verfolgern zur Landezone fliehen
 
